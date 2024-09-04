@@ -68,5 +68,3 @@ We welcome contributions from the open-source community to help us improve BookB
 
 This project is licensed under the MIT License.
 ``` 
-    
- 
