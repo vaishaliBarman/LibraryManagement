@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Biography Books</title>
+    <link rel = "stylesheet" href="style.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            width: 80%;
+            margin: auto;
+            overflow: hidden;
+            padding-top: 100px;
+        }
+
+        #books {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            margin-bottom: 20px;
+        }
+
+        .book {
+            background: white;
+            border: 1px solid #ddd;
+            margin: 10px;
+            padding: 15px;
+            width: 200px;
+            text-align: center;
+        }
+
+        .book img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        .book h3 {
+            font-size: 18px;
+            margin: 10px 0;
+        }
+
+        .book p {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .search-bar {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .search-bar input {
+            padding: 10px;
+            font-size: 16px;
+            width: 300px;
+            margin-right: 10px;
+        }
+
+        .search-bar button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-left">
+            <div class="logo">
+                <img src="logo.png" alt="Library Logo">
+            </div>
+            <div class="header-text">BookBuddy</div>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="index1.html">Home</a></li>
+                <li><a href="https://www.pdfdrive.com/">Reference</a></li>
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+        </nav>
+        <div class="search-bar">
+            
+            <input type="text" id="searchInput" placeholder="Search...">
+            
+        </div>
+    </header>
+    <main>
+        <div class="container">
+            <h1>Biography Books</h1>
+            <div id="books"></div>
+        </div>
+    </main>
+    <footer>
+        <p>&copy; 2024 Library Management System. All rights reserved.</p>
+    </footer>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            let page = 1;
+            const booksContainer = document.getElementById('books');
+            let isLoading = false;
+            const seenBooks = new Set(); // To track seen book IDs
+
+            // Shuffle the books array to randomize positions
+            function shuffleArray(array) {
+                for (let i = array.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [array[i], array[j]] = [array[j], array[i]];
+                }
+                return array;
+            }
+
+            // Fetch a fallback book image from Unsplash
+            function fetchFallbackImage() {
+                const UNSPLASH_API_URL = `https://api.unsplash.com/search/photos?query=book&client_id=YOUR_UNSPLASH_ACCESS_KEY`;
+
+                return fetch(UNSPLASH_API_URL)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.results.length > 0) {
+                            return data.results[0].urls.small;
+                        } else {
+                            return 'https://via.placeholder.com/150';
+                        }
+                    })
+                    .catch(() => 'https://via.placeholder.com/150');
+            }
+
+            // Fetch books based on query
+            function fetchBooks(query = 'biography') {
+                if (isLoading) return;
+
+                isLoading = true;
+                const API_URL = `https://www.googleapis.com/books/v1/volumes?q=${query}&orderBy=relevance&startIndex=${(page - 1) * 10}&maxResults=10`;
+
+                // Introduce a delay to simulate a 0.2 second wait time
+                setTimeout(() => {
+                    fetch(API_URL)
+                        .then(response => response.json())
+                        .then(data => {
+                            let books = data.items || [];
+                            books = shuffleArray(books); // Randomize the order of books
+
+                            const imagePromises = books.map(async book => {
+                                const bookId = book.id;
+                                if (!seenBooks.has(bookId)) {
+                                    seenBooks.add(bookId);
+
+                                    const bookInfo = book.volumeInfo;
+                                    const bookCover = bookInfo.imageLinks ? bookInfo.imageLinks.thumbnail : await fetchFallbackImage();
+
+                                    const bookElement = document.createElement('div');
+                                    bookElement.classList.add('book');
+
+                                    bookElement.innerHTML = `
+                                        <img src="${bookCover}" alt="${bookInfo.title}">
+                                        <h3>${bookInfo.title}</h3>
+                                        <p>by ${bookInfo.authors ? bookInfo.authors.join(', ') : 'Unknown'}</p>
+                                        <p>Rating: ${bookInfo.averageRating || 'N/A'}</p>
+                                    `;
+
+                                    booksContainer.appendChild(bookElement);
+                                }
+                            });
+
+                            Promise.all(imagePromises).then(() => {
+                                page++;
+                                isLoading = false;
+                            });
+                        })
+                        .catch(error => {
+                            console.error('Error fetching the books:', error);
+                            isLoading = false;
+                        });
+                }, 200); // 0.2 seconds delay
+            }
+
+            function handleScroll() {
+                const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
+                if (scrollTop + clientHeight >= scrollHeight - 5) {
+                    fetchBooks(document.getElementById('searchInput').value || 'biography');
+                }
+            }
+
+            function handleSearch() {
+                // Reset page and clear books
+                page = 1;
+                seenBooks.clear();
+                booksContainer.innerHTML = '';
+                fetchBooks(document.getElementById('searchInput').value || 'biography');
+            }
+
+            // Load initial biography books
+            fetchBooks();
+
+            // Add event listener for infinite scrolling
+            window.addEventListener('scroll', handleScroll);
+
+            // Add event listener for search button
+            document.getElementById('searchButton').addEventListener('click', handleSearch);
+
+            // Add event listener for input changes
+            document.getElementById('searchInput').addEventListener('input', () => {
+                handleSearch();
+            });
+        });
+    </script>
+</body>
+</html>

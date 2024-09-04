@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login-Signup</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: sans-serif;
+        }
+
+        body::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: url("https://i.makeagif.com/media/3-26-2020/4A2aZE.gif");
+            background-size: cover;
+            filter: blur(3px);
+            z-index: -1;
+        }
+        a{
+            text-decoration: none;
+        }
+
+        #main {
+            width: 600px;
+            height: 700px;
+            background-image: url("https://img.freepik.com/free-photo/red-wooden-background_53876-89000.jpg?ga=GA1.1.309381817.1725084589&semt=ais_hybrid");
+            background-repeat: no-repeat;
+            background-size: cover;
+            overflow: hidden;
+            border-radius: 10px;
+            box-shadow: 10px 40px 80px rgba(0, 0, 0, 0.959);
+        }
+
+        #check {
+            display: none;
+        }
+
+        .signup {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
+        label {
+            color: #cbf3e5;
+            font-size: 50px;
+            justify-content: center;
+            display: flex;
+            margin-top: 50px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.5s ease-in-out;
+            margin-bottom: 60px;
+            animation: colorChange 3s infinite alternate ease-in-out;
+        }
+
+        @keyframes colorChange {
+            0% {
+                color: rgba(2, 61, 58, 0.959);
+            }
+            50% {
+                color: #025753f5;
+            }
+            100% {
+                color: #046a65f5;
+            }
+        }
+
+        label:hover {
+            color: #094737;
+        }
+
+        input {
+            width: 60%;
+            height: 20px;
+            font-size: 20px;
+            background: #e7bdd5;
+            justify-content: center;
+            display: flex;
+            margin: 20px auto;
+            padding: 10px;
+            border: none;
+            outline: none;
+            border-radius: 70px;
+        }
+
+        input:hover {
+            border: 3px solid #094737;
+        }
+
+        button {
+            width: 40%;
+            height: 50px;
+            margin: 40px auto;
+            justify-content: center;
+            display: block;
+            color: #cbf3e5;
+            background: rgba(2, 61, 58, 0.959);
+            font-size: 30px;
+            font-weight: bold;
+            margin-top: 40px;
+            outline: none;
+            border: none;
+            border-radius: 40px;
+            transition: .3s ease-in;
+            cursor: pointer;
+            box-shadow: 5px 20px 40px rgba(2, 85, 81, 0.959);
+        }
+
+        button:hover {
+            background: #025551f5;
+        }
+
+        .login {
+            height: 1000px;
+            background: #d26868;
+            border-radius: 60% / 10%;
+            transform: translateY(-180px);
+            transition: .8s ease-in-out;
+        }
+
+        .login h1 {
+            color: #5e020c;
+            transform: scale(.6);
+        }
+
+        .login p {
+            text-align: center;
+            padding: 30px;
+        }
+
+        .login input {
+            background: rgb(94, 2, 12);
+            color: white;
+        }
+
+        #check:checked ~ .login {
+            transform: translateY(-500px);
+        }
+
+        #check:checked ~ .login label {
+            transform: scale(1);
+        }
+
+        #check:checked ~ .signup label {
+            transform: scale(.6);
+        }
+    </style>
+</head>
+<body>
+    <div id="main">
+        <input type="checkbox" id="check" aria-hidden="true">
+        <div class="signup">
+            <form id="signup-form" action="#">
+                <label for="check" aria-hidden="true">Sign-Up</label>
+                <div class="details">
+                    <input type="text" name="username" placeholder="User-name" required>
+                    <input type="email" name="email" id="email" placeholder="Email" required>
+                    <input type="password" name="password" id="password" placeholder="Password" required>
+                    <input type="password" name="confirm-password" id="confirm-password" placeholder="Confirm-password" required>
+                </div>
+                <button type="submit">Sign-Up</button>
+            </form>
+        </div>
+        <div class="login">
+            <form id="login-form" action="#">
+                <label for="check" aria-hidden="true">Login</label>
+                <div class="details">
+                    <input type="email" name="email" id="login-email" placeholder="Email Or User name" required>
+                    <input type="password" name="password" id="login-password" placeholder="Password" required>
+                </div>
+                <button type="submit">Login</button>
+                <p>Don't have an account? <a href="index.html">Create account</a></p>
+            </form>
+        </div>
+    </div>
+    <script>
+        // Sign-up form submission
+        document.getElementById('signup-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            let username = e.target.username.value;
+            let email = e.target.email.value.toLowerCase();
+            let password = e.target.password.value;
+            let confirmPassword = e.target['confirm-password'].value;
+
+            let storedUsers = JSON.parse(localStorage.getItem('users')) || [];
+
+            // Check if the user already exists
+            let userExists = storedUsers.some(user => user.username === username || user.email === email);
+
+            if (userExists) {
+                alert('Username or Email already exists. Please use a different one.');
+                return;
+            }
+
+            // Check if passwords match
+            if (password !== confirmPassword) {
+                alert('Passwords do not match!');
+                return;
+            }
+
+            // Create a new user object
+            let newUser = {
+                username: username,
+                email: email,
+                password: password
+            };
+
+            // Store the new user in localStorage
+            storedUsers.push(newUser);
+            localStorage.setItem('users', JSON.stringify(storedUsers));
+            alert('Sign up successful! You can now log in.');
+
+            // Redirect to index1.html
+            window.location.href = 'index1.html';
+
+            // Reset the form
+            e.target.reset();
+        });
+
+        // Login form submission
+        document.getElementById('login-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            let loginEmail = e.target.email.value.toLowerCase();
+            let loginPassword = e.target.password.value;
+
+            let storedUsers = JSON.parse(localStorage.getItem('users')) || [];
+
+            // Check if the user credentials are valid
+            let validUser = storedUsers.find(user => 
+                (user.email === loginEmail || user.username === loginEmail) && user.password === loginPassword
+            );
+
+            if (validUser) {
+                alert('Login successful!');
+                window.location.href = 'index1.html';
+            } else {
+                alert('Invalid credentials!');
+            }
+        });
+    </script>
+</body>
+</html>

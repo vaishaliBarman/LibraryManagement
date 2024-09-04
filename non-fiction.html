@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Non-Fiction Books</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+}
+
+.heading {
+    display: grid;
+    place-items: center;    
+    height: 50px; 
+}
+
+h1 {
+    margin: 0; 
+    position: fixed;
+}
+
+.container {
+    width: 80%;
+    margin: auto;
+    overflow: hidden;
+    padding-top: 100px;
+}
+
+#books {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    margin-bottom: 20px;
+}
+
+.book {
+    background: white;
+    border: 1px solid #ddd;
+    margin: 10px;
+    padding: 15px;
+    width: 200px;
+    text-align: center;
+}
+
+.book img {
+    max-width: 100%;
+    height: auto;
+}
+
+.book h3 {
+    font-size: 18px;
+    margin: 10px 0;
+}
+
+.book p {
+    font-size: 14px;
+    color: #666;
+}
+
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-left">
+            <div class="logo">
+                <img src="logo.png" alt="Library Logo">
+            </div>
+            <div class="header-text">BookBuddy</div>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="index1.html">Home</a></li>
+                <li><a href="https://www.pdfdrive.com/">Reference</a></li>
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+        </nav>
+        <div class="search-bar">
+            
+            <input type="text" id="searchInput" placeholder="Search...">
+            
+        </div>
+    </header>
+    <main>
+        <div class="container">
+            <div class="heading">
+                <h1>Non-Fiction Books</h1>
+            </div>
+            <div id="books"></div>
+        </div>
+    </main>
+    <footer>
+        <p>&copy; 2024 Library Management System. All rights reserved.</p>
+    </footer>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+    let page = 1;
+    const booksContainer = document.getElementById('books');
+    let isLoading = false;
+    const seenBooks = new Set(); // To track seen book IDs
+    const loadingIndicator = document.createElement('div');
+    loadingIndicator.classList.add('loading');
+    loadingIndicator.textContent = 'Loading...';
+
+    function fetchBooks(query = '') {
+        if (isLoading) return;
+
+        isLoading = true;
+        booksContainer.appendChild(loadingIndicator);
+
+        const API_URL = `https://www.googleapis.com/books/v1/volumes?q=subject:nonfiction+${query}&orderBy=relevance&startIndex=${(page - 1) * 10}&maxResults=10`;
+
+        const fetchTimeout = setTimeout(() => {
+            fetch(API_URL)
+                .then(response => response.json())
+                .then(data => {
+                    const books = data.items || [];
+
+                    books.forEach(book => {
+                        const bookId = book.id;
+                        if (!seenBooks.has(bookId)) {
+                            seenBooks.add(bookId);
+
+                            const bookInfo = book.volumeInfo;
+                            const bookElement = document.createElement('div');
+                            bookElement.classList.add('book');
+
+                            const bookCover = bookInfo.imageLinks ? bookInfo.imageLinks.thumbnail : 'https://via.placeholder.com/150';
+                            bookElement.innerHTML = `
+                                <img src="${bookCover}" alt="${bookInfo.title}">
+                                <h3>${bookInfo.title}</h3>
+                                <p>by ${bookInfo.authors ? bookInfo.authors.join(', ') : 'Unknown'}</p>
+                                <p>Rating: ${bookInfo.averageRating || 'N/A'}</p>
+                            `;
+
+                            booksContainer.appendChild(bookElement);
+                        }
+                    });
+
+                    page++;
+                    isLoading = false;
+                    booksContainer.removeChild(loadingIndicator);
+                })
+                .catch(error => {
+                    console.error('Error fetching the books:', error);
+                    isLoading = false;
+                    booksContainer.removeChild(loadingIndicator);
+                });
+        }, 100);
+    }
+
+    function handleScroll() {
+        const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
+        if (scrollTop + clientHeight >= scrollHeight - 5) {
+            fetchBooks(document.getElementById('searchInput').value);
+        }
+    }
+
+    function handleSearch() {
+        // Reset page and clear books
+        page = 1;
+        seenBooks.clear();
+        booksContainer.innerHTML = '';
+        fetchBooks(document.getElementById('searchInput').value);
+    }
+
+    // Load initial books
+    fetchBooks();
+
+    // Add event listener for infinite scrolling
+    window.addEventListener('scroll', handleScroll);
+
+    // Add event listener for search button
+    document.getElementById('searchButton').addEventListener('click', handleSearch);
+
+    // Add event listener for input changes
+    document.getElementById('searchInput').addEventListener('input', () => {
+        handleSearch();
+    });
+});
+
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,255 @@
+body {
+    display: flex;
+    flex-direction: column;
+    font-family: Arial, sans-serif;
+    background-color: #CEE6F2;
+    margin: 0;
+    padding: 0;
+}
+
+header {
+    background-color: #962E2A;
+    color: white;
+    padding: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: fixed;
+    width: 100%;
+    height: 50px;
+    z-index: 1000;
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+header .logo {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    overflow: hidden;
+}
+
+header .logo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.header-text {
+    font-size: 24px;
+    font-weight: bold;
+    padding: 5px;
+    border-radius: 5px;
+}
+
+header nav ul {
+    list-style: none;
+    display: flex;
+    gap: 15px;
+    margin: 0;
+    padding: 0;
+}
+
+header nav ul li a {
+    color: white;
+    text-decoration: none;
+    padding: 5px;
+    border-radius: 5px;
+}
+
+.search-bar{
+    margin-right: 50px;
+}
+
+header .search-bar {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+}
+
+header .search-bar select,
+header .search-bar input,
+header .search-bar button {
+    border: 2px solid #962E2A;
+    border-radius: 5px;
+}
+
+header .search-bar select,
+header .search-bar input {
+    padding: 5px;
+    font-size: 16px;
+}
+
+header .search-bar button {
+    padding: 5px 10px;
+    background-color: #555;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+header .search-bar button:hover {
+    background-color: #777;
+}
+
+html, body {
+    height: 100%;
+    margin: 0;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+}
+
+main {
+    flex: 1;
+    margin-top: 70px; /* Adjust to ensure content isn't hidden behind header */
+}
+
+footer {
+    background-color: #962E2A;
+    color: white;
+    text-align: center;
+    padding: 10px;
+    border-top: 2px solid #962E2A;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+}
+
+.results-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+    margin-top: 20px;
+    padding-bottom: 60px; /* Ensure content isn't hidden behind footer */
+}
+
+.result-item {
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    overflow: hidden;
+    background: white;
+    max-width: 300px;
+    text-align: center;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.result-item img {
+    width: 128px;
+    height: 192px;
+    object-fit: cover;
+    margin: auto;
+}
+
+.result-item .info {
+    padding: 10px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.result-item .title {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.result-item .author {
+    font-size: 16px;
+    color: #555;
+}
+
+.result-item .description {
+    font-size: 14px;
+    color: #777;
+    max-height: 6em; /* Adjust this value to fit 5 lines of text */
+    overflow: hidden; /* Hide overflow text */
+    text-overflow: ellipsis; /* Add ellipsis for overflow text */
+    line-height: 1.2em;
+}
+
+@media (width < 600px) {
+    header {
+        flex-direction: column;
+        height: auto;
+    }
+
+    .header-left {
+        justify-content: center;
+        margin-bottom: 10px;
+    }
+
+    header nav ul {
+        flex-direction: row;
+        gap: 10px;
+        margin-top: 5px;
+    }
+
+    .search-bar {
+        flex-direction: column;
+        width: 80%;
+        margin-right: 20px;
+        margin-top: 5px;
+    }
+
+    header .search-bar select,
+    header .search-bar input,
+    header .search-bar button {
+        width: 100%;
+    }
+
+    .results-container {
+        flex-direction: column;
+    }
+
+    .result-item {
+        max-width: 100%;
+        margin: 0 auto;
+    }
+
+    footer {
+        padding: 5px;
+    }
+}
+
+/* Tablets and small desktops */
+@media (610px <= width <= 1024px) {
+    .results-container {
+        gap: 15px;
+    }
+
+    .result-item {
+        max-width: 45%; /* Adjust to fit 2 items per row */
+    }
+
+    .result-item img {
+        width: 100px;
+        height: 150px;
+    }
+}
+
+/* Larger desktops */
+@media (width >= 1025px) {
+    .results-container {
+        gap: 20px;
+    }
+
+    .result-item {
+        max-width: 30%; /* Adjust to fit 3 items per row */
+    }
+
+    .result-item img {
+        width: 128px;
+        height: 192px;
+    }
+}
